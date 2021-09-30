@@ -27,7 +27,6 @@ class NotesAdapter(val onNoteClickListener: OnNoteClickListener) :
     ) :
         RecyclerView.ViewHolder(binding.root), View.OnLongClickListener {
 
-
         fun bindViewHolder(noteItem: Notes) {
             binding.noteTextView.text = noteItem.note
             _idCbChecked.value = noteItem.isChecked
