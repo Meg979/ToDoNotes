@@ -17,6 +17,8 @@ class NotesViewModel(private val databaseDao: NotesDao) : ViewModel() {
         }
     }
 
+
+
     fun delete(note: Notes) {
         viewModelScope.launch {
             deleteNote(note)
@@ -40,6 +42,7 @@ class NotesViewModel(private val databaseDao: NotesDao) : ViewModel() {
         databaseDao.addNote(note)
     }
 
+
     suspend fun deleteNote(note: Notes) {
         databaseDao.deleteNote(note)
     }
@@ -51,4 +54,5 @@ class NotesViewModel(private val databaseDao: NotesDao) : ViewModel() {
     suspend fun deleteAllNotes() {
         databaseDao.deleteAllNotes()
     }
+
 }

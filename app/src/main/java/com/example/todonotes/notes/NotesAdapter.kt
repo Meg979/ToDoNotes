@@ -1,8 +1,12 @@
 package com.example.todonotes.notes
 
+import android.app.Application
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,24 +17,28 @@ import com.example.todonotes.R
 import com.example.todonotes.database.Notes
 import com.example.todonotes.databinding.NoteViewholderBinding
 
-
-class NotesAdapter(val onNoteClickListener: OnNoteClickListener) :
+const val TAG = "Notes"
+class NotesAdapter(private val onNoteClickListener: OnNoteClickListener,
+                   private val onCheckBoxClickListener: OnCheckBoxClickListener) :
     ListAdapter<Notes, NotesAdapter.NotesViewHolder>(NotesDiffUtil()) {
 
-    private val _idCbChecked = MutableLiveData<Boolean>()
-    val idCbChecked: LiveData<Boolean>
-        get() = _idCbChecked
 
     inner class NotesViewHolder(
         private val binding: NoteViewholderBinding,
-        val onNoteClickListener: OnNoteClickListener
+        private val onNoteClickListener: OnNoteClickListener,
+        private val onCheckBoxClickListener: OnCheckBoxClickListener
     ) :
         RecyclerView.ViewHolder(binding.root), View.OnLongClickListener {
 
         fun bindViewHolder(noteItem: Notes) {
             binding.noteTextView.text = noteItem.note
-            _idCbChecked.value = noteItem.isChecked
-      //      binding.checkBox.isChecked = noteItem.isChecked
+            binding.checkBox.isChecked = noteItem.isChecked
+            binding.checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
+                if (isChecked||!isChecked){
+                    onCheckBoxClickListener.onClick(adapterPosition,isChecked)
+                }
+            }
+            //   binding.checkBox.isChecked = noteItem.isChecked
             binding.executePendingBindings()
             binding.root.setOnLongClickListener(this)
 
@@ -43,22 +51,21 @@ class NotesAdapter(val onNoteClickListener: OnNoteClickListener) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotesViewHolder {
+        Log.d(TAG, "onCreateViewHolder: ViewHolder created")
         val binding = DataBindingUtil.inflate<NoteViewholderBinding>(
             LayoutInflater.from(parent.context),
             R.layout.note_viewholder, parent, false
         )
-        return NotesViewHolder(binding, onNoteClickListener)
+        return NotesViewHolder(binding, onNoteClickListener,onCheckBoxClickListener)
     }
 
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
+        Log.d(TAG, "onBindViewHolder: notes assigned to the viewHolder")
         val noteItem = getItem(position)
         holder.bindViewHolder(noteItem)
     }
 
 
-    fun getNoteAt(position: Int): Notes {
-        return getItem(position)
-    }
 
 
 }
@@ -76,5 +83,9 @@ class NotesDiffUtil : DiffUtil.ItemCallback<Notes>() {
 
 interface OnNoteClickListener {
     fun onClick(position: Int)
+}
+
+interface OnCheckBoxClickListener{
+    fun onClick(position: Int,status:Boolean)
 }
 
