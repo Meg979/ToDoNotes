@@ -17,58 +17,25 @@ import com.example.todonotes.R
 import com.example.todonotes.database.Notes
 import com.example.todonotes.database.NotesDatabase
 import com.example.todonotes.databinding.ActivityMainBinding
-
+private const val TAG = "Notes"
 class MainActivity : AppCompatActivity(),OnNoteClickListener {
     private lateinit var viewModel: NotesViewModel
     private lateinit var adapter: NotesAdapter
+    private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding =
+         binding =
             DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
         val databaseDao = NotesDatabase.getInstance(this).notesDatabaseDao
         val viewModelFactory = NotesViewModelFactory(databaseDao)
         viewModel = ViewModelProvider(this, viewModelFactory).get(NotesViewModel(databaseDao)::class.java)
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-      adapter = NotesAdapter(this)
-        binding.recyclerView.adapter = adapter
-        binding.fab.setOnClickListener {
-            Log.d("Notes", "fab called ")
-            AddNoteDialog(this, object : OnDialogClickListener {
-                override fun onClick(note: Notes) {
-                    viewModel.insert(note)
-                }
-            }).show()
-        }
-
-
-
+        setRecyclerView()
+        addNotesToList()
         viewModel.getAllNotes().observe(this, Observer {
+            Log.d(TAG, "getAllNotes list submitted ")
             adapter.submitList(it)
         })
-
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                viewModel.delete(adapter.getNoteAt(viewHolder.adapterPosition))
-                Toast.makeText(this@MainActivity, "Note deleted", Toast.LENGTH_SHORT).show()
-            }
-
-        }).attachToRecyclerView(binding.recyclerView)
-
-        adapter.idCbChecked.observe(this, Observer { isChecked->
-           if (isChecked){
-
-           }
-
-
-        })
+        deleteSingleNote()
 
     }
 
@@ -98,5 +65,41 @@ class MainActivity : AppCompatActivity(),OnNoteClickListener {
        }).show()
     }
 
+    private fun deleteSingleNote() {
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                viewModel.delete(adapter.currentList[viewHolder.adapterPosition])
+                Toast.makeText(this@MainActivity, "Note deleted", Toast.LENGTH_SHORT).show()
+            }
+
+        }).attachToRecyclerView(binding.recyclerView)
+    }
+
+    private fun setRecyclerView(){
+        Log.d(TAG, "layout manager")
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        Log.d(TAG, "adapter called")
+        adapter = NotesAdapter(this)
+        binding.recyclerView.adapter = adapter
+    }
+
+    private fun addNotesToList(){
+        binding.fab.setOnClickListener {
+            Log.d(TAG, "fab called ")
+            AddNoteDialog(this, object : OnDialogClickListener {
+                override fun onClick(note: Notes) {
+                    viewModel.insert(note)
+                }
+            }).show()
+        }
+    }
 
 }
