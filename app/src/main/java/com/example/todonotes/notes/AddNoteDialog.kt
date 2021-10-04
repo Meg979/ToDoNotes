@@ -32,4 +32,6 @@ class AddNoteDialog(context: Context, private val onDialogClickListener: OnDialo
             cancel()
         }
     }
+
+
 }

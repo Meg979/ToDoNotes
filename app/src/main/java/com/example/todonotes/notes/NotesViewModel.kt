@@ -1,5 +1,6 @@
 package com.example.todonotes.notes
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,11 +27,6 @@ class NotesViewModel(private val databaseDao: NotesDao) : ViewModel() {
     }
 
 
-   /* fun getAll() {
-        viewModelScope.launch {
-            getAllNotes()
-        }
-    }*/
 
     fun deleteAll(){
         viewModelScope.launch {
@@ -38,12 +34,12 @@ class NotesViewModel(private val databaseDao: NotesDao) : ViewModel() {
         }
     }
 
-    suspend fun addNote(note: Notes) {
+    private suspend fun addNote(note: Notes) {
         databaseDao.addNote(note)
     }
 
 
-    suspend fun deleteNote(note: Notes) {
+    private suspend fun deleteNote(note: Notes) {
         databaseDao.deleteNote(note)
     }
 
@@ -51,8 +47,10 @@ class NotesViewModel(private val databaseDao: NotesDao) : ViewModel() {
      return databaseDao.getAllNotes()
     }
 
-    suspend fun deleteAllNotes() {
+    private suspend fun deleteAllNotes() {
         databaseDao.deleteAllNotes()
     }
+
+
 
 }

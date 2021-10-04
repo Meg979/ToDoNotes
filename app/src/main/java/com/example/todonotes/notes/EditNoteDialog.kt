@@ -9,7 +9,7 @@ import com.example.todonotes.R
 import com.example.todonotes.database.Notes
 import com.example.todonotes.databinding.EditNoteDialogBinding
 
-class EditNoteDialog(context: Context,val onDialogClickListener: OnDialogClickListener) :AppCompatDialog(context) {
+class EditNoteDialog(context: Context, private val onDialogClickListener: OnDialogClickListener) :AppCompatDialog(context) {
     private lateinit var binding :EditNoteDialogBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,6 +19,7 @@ class EditNoteDialog(context: Context,val onDialogClickListener: OnDialogClickLi
         binding.tvUpdate.setOnClickListener {
             val editedNote = binding.etEditNote.text.toString()
             val note = Notes(editedNote,false)
+            //onNoteClickListener
             onDialogClickListener.onClick(note)
             dismiss()
         }

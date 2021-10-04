@@ -29,18 +29,17 @@ class NotesAdapter(private val onNoteClickListener: OnNoteClickListener,
         private val onCheckBoxClickListener: OnCheckBoxClickListener
     ) :
         RecyclerView.ViewHolder(binding.root), View.OnLongClickListener {
+        init {
+            binding.root.setOnLongClickListener(this)
+        }
 
         fun bindViewHolder(noteItem: Notes) {
             binding.noteTextView.text = noteItem.note
             binding.checkBox.isChecked = noteItem.isChecked
             binding.checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
-                if (isChecked||!isChecked){
                     onCheckBoxClickListener.onClick(adapterPosition,isChecked)
-                }
             }
-            //   binding.checkBox.isChecked = noteItem.isChecked
             binding.executePendingBindings()
-            binding.root.setOnLongClickListener(this)
 
         }
 
